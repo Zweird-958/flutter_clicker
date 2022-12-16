@@ -33,6 +33,7 @@ class _SampleAppPageState extends State<SampleAppPage> {
   // };
 
   int money = 0;
+  bool shop = false;
 
   void increaseMoney() {
     setState(() {
@@ -44,6 +45,13 @@ class _SampleAppPageState extends State<SampleAppPage> {
   void reset() {
     setState(() {
       money = 0;
+      shop = false;
+    });
+  }
+
+  void toggleShop() {
+    setState(() {
+      shop = !shop;
     });
   }
 
@@ -62,12 +70,37 @@ class _SampleAppPageState extends State<SampleAppPage> {
         ));
   }
 
+  TableRow rowOfTable(List<String> labelList) {
+    List<Widget> allCells = [];
+    for (String label in labelList) {
+      allCells.add(TableCell(child: Center(child: Text(label))));
+    }
+
+    return TableRow(children: allCells);
+  }
+
+  Widget shopWidget() {
+    return Visibility(
+      visible: shop,
+      child: Container(
+        width: 600.0,
+        child: Table(
+          defaultColumnWidth: FixedColumnWidth(100.0),
+          border: TableBorder.all(color: Colors.red, width: 1.0),
+          children: [
+            rowOfTable(["NAME", "CPS", "CPC", "PRICE", "OWNED", "TEST"]),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       // Top Bar
       appBar: AppBar(
-        title: Center(child: Text(money.toString())),
+        title: Center(child: Text("${money.toString()} - ${shop}")),
       ),
       // Contenu de la page
       body: Container(
@@ -78,8 +111,9 @@ class _SampleAppPageState extends State<SampleAppPage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                 createButton(Colors.blue.shade600, "WORK", increaseMoney),
-                createButton(Colors.green.shade600, "SHOP", increaseMoney),
-                createButton(Colors.red.shade600, "RESET", reset)
+                shopWidget(),
+                createButton(Colors.green.shade600, "SHOP", toggleShop),
+                createButton(Colors.red.shade600, "RESET", reset),
               ]))),
       // Bouton flottant
       floatingActionButton: FloatingActionButton(
