@@ -1,6 +1,7 @@
 import 'dart:async';
-
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'dart:collection';
 
 const shopItems = {
   "Miner": {"cpc": 10, "cps": 10, "price": 10, "owned": 0}
@@ -57,7 +58,7 @@ class _SampleAppPageState extends State<SampleAppPage> {
       shop = false;
       cpc = 1;
       cps = 0;
-      shopPlayer = Map.from(shopItems);
+      shopPlayer = const DeepCollectionEquality.unordered().deepCopy(shopItems);
     });
   }
 
