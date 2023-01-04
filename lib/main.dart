@@ -1,4 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+
+const shopItems = {
+  "Miner": {"cpc": 10, "cps": 10, "price": 10, "owned": 0}
+};
 
 void main() {
   runApp(const SampleApp());
@@ -33,12 +39,15 @@ class _SampleAppPageState extends State<SampleAppPage> {
   // };
 
   int money = 0;
+  int cpc = 1;
+  int cps = 0;
   bool shop = false;
+
+  var shopPlayer = Map.from(shopItems);
 
   void increaseMoney() {
     setState(() {
-      // state["money"]? += 5;
-      money++;
+      money += cpc;
     });
   }
 
@@ -46,6 +55,9 @@ class _SampleAppPageState extends State<SampleAppPage> {
     setState(() {
       money = 0;
       shop = false;
+      cpc = 1;
+      cps = 0;
+      shopPlayer = Map.from(shopItems);
     });
   }
 
@@ -70,26 +82,67 @@ class _SampleAppPageState extends State<SampleAppPage> {
         ));
   }
 
+  Widget buyButton(String key) {
+    var currentItem = shopPlayer[key];
+    void buyItem() {
+      if (money < currentItem["price"]) {
+        return;
+      }
+      setState(() {
+        money -= currentItem["price"] as int;
+        cpc += currentItem["cpc"] as int;
+        cps += currentItem["cps"] as int;
+        currentItem["owned"] += 1;
+      });
+    }
+
+    return TextButton(
+        onPressed: buyItem,
+        style: TextButton.styleFrom(
+            backgroundColor:
+                money >= currentItem["price"] ? Colors.green : Colors.red,
+            foregroundColor: Colors.white,
+            // fixedSize: Size(130, 50),
+            // padding: EdgeInsets.symmetric(horizontal: 40.0, vertical: 20.0),
+            textStyle:
+                const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+        child: const Text("BUY"));
+  }
+
   TableRow rowOfTable(List<String> labelList) {
     List<Widget> allCells = [];
     for (String label in labelList) {
-      allCells.add(TableCell(child: Center(child: Text(label))));
+      if (label == "BUY") {
+        allCells.add(buyButton(labelList[0]));
+      } else {
+        allCells.add(TableCell(
+            verticalAlignment: TableCellVerticalAlignment.middle,
+            child: Center(child: Text(label))));
+      }
     }
 
     return TableRow(children: allCells);
   }
 
   Widget shopWidget() {
+    List<TableRow> allItems = [];
+    allItems.add(rowOfTable(["NAME", "CPS", "CPC", "PRICE", "OWNED", ""]));
+    shopPlayer.forEach((key, value) => allItems.add(rowOfTable([
+          key,
+          value["cps"].toString(),
+          value["cpc"].toString(),
+          value["price"].toString(),
+          "x${value["owned"].toString()}",
+          "BUY"
+        ])));
     return Visibility(
       visible: shop,
-      child: Container(
+      child: SizedBox(
         width: 600.0,
         child: Table(
-          defaultColumnWidth: FixedColumnWidth(100.0),
+          defaultColumnWidth: const FixedColumnWidth(100.0),
           border: TableBorder.all(color: Colors.red, width: 1.0),
-          children: [
-            rowOfTable(["NAME", "CPS", "CPC", "PRICE", "OWNED", "TEST"]),
-          ],
+          children: allItems,
         ),
       ),
     );
