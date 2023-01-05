@@ -1,11 +1,18 @@
 import 'dart:async';
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'dart:collection';
 
-const shopItems = {
-  "Miner": {"cpc": 10, "cps": 10, "price": 10, "owned": 0}
+const Map<String, Map<String, int>> SHOP_ITEMS = {
+  "Miner": {"cpc": 10, "cps": 10, "price": 0, "owned": 0}
 };
+
+deepCopy(Map<String, Map<String, int>> original) {
+  Map<String, Map<String, int>> copy = {};
+  original.forEach((key, value) {
+    copy[key] = Map.from(value);
+  });
+  return copy;
+}
 
 void main() {
   runApp(const SampleApp());
@@ -44,11 +51,17 @@ class _SampleAppPageState extends State<SampleAppPage> {
   int cps = 0;
   bool shop = false;
 
-  var shopPlayer = Map.from(shopItems);
+  Map<String, Map<String, int>> shopPlayer = deepCopy(SHOP_ITEMS);
 
   void increaseMoney() {
     setState(() {
       money += cpc;
+    });
+  }
+
+  void clickPerSecond() {
+    setState(() {
+      money += cps;
     });
   }
 
@@ -58,13 +71,24 @@ class _SampleAppPageState extends State<SampleAppPage> {
       shop = false;
       cpc = 1;
       cps = 0;
-      shopPlayer = const DeepCollectionEquality.unordered().deepCopy(shopItems);
+      shopPlayer = deepCopy(SHOP_ITEMS);
     });
   }
 
   void toggleShop() {
     setState(() {
       shop = !shop;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    Timer.periodic(const Duration(seconds: 1), (Timer t) {
+      setState(() {
+        money += cps;
+      });
     });
   }
 
@@ -76,9 +100,10 @@ class _SampleAppPageState extends State<SampleAppPage> {
           style: TextButton.styleFrom(
               backgroundColor: bgColor,
               foregroundColor: Colors.white,
-              fixedSize: Size(130, 50),
+              fixedSize: const Size(130, 50),
               // padding: EdgeInsets.symmetric(horizontal: 40.0, vertical: 20.0),
-              textStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              textStyle:
+                  const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           child: Text(label),
         ));
   }
@@ -86,14 +111,19 @@ class _SampleAppPageState extends State<SampleAppPage> {
   Widget buyButton(String key) {
     var currentItem = shopPlayer[key];
     void buyItem() {
-      if (money < currentItem["price"]) {
+      if (currentItem == null) {
         return;
       }
+
+      if (currentItem["price"] == null) {
+        return;
+      }
+
       setState(() {
         money -= currentItem["price"] as int;
         cpc += currentItem["cpc"] as int;
         cps += currentItem["cps"] as int;
-        currentItem["owned"] += 1;
+        currentItem["owned"] = currentItem["owned"]! + 1;
       });
     }
 
@@ -101,7 +131,7 @@ class _SampleAppPageState extends State<SampleAppPage> {
         onPressed: buyItem,
         style: TextButton.styleFrom(
             backgroundColor:
-                money >= currentItem["price"] ? Colors.green : Colors.red,
+                money >= currentItem!["price"]! ? Colors.green : Colors.red,
             foregroundColor: Colors.white,
             // fixedSize: Size(130, 50),
             // padding: EdgeInsets.symmetric(horizontal: 40.0, vertical: 20.0),
@@ -154,21 +184,20 @@ class _SampleAppPageState extends State<SampleAppPage> {
     return Scaffold(
       // Top Bar
       appBar: AppBar(
-        title: Center(child: Text("${money.toString()} - ${shop}")),
+        title: Center(
+            child: Text("CPS : $cps - \$${money.toString()} - CPC : $cpc")),
       ),
       // Contenu de la page
-      body: Container(
-          margin: const EdgeInsets.only(top: 20.0, bottom: 20.0),
-          child: Center(
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                createButton(Colors.blue.shade600, "WORK", increaseMoney),
-                shopWidget(),
-                createButton(Colors.green.shade600, "SHOP", toggleShop),
-                createButton(Colors.red.shade600, "RESET", reset),
-              ]))),
+      body: Center(
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+            createButton(Colors.blue.shade600, "WORK", increaseMoney),
+            shopWidget(),
+            createButton(Colors.green.shade600, "SHOP", toggleShop),
+            createButton(Colors.red.shade600, "RESET", reset),
+          ])),
       // Bouton flottant
       floatingActionButton: FloatingActionButton(
         onPressed: increaseMoney,
