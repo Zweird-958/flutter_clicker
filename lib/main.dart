@@ -31,12 +31,14 @@ class Player {
   int rebirth;
   int cpc;
   int cps;
+  Map<String, Map<String, int>> items = deepCopy(SHOP_ITEMS);
 
   Player({
     this.money = 0,
     this.rebirth = 0,
-    this.cpc = 0,
+    this.cpc = 1,
     this.cps = 0,
+    // this.items = deepCopy(SHOP_ITEMS),
   });
 }
 
@@ -63,11 +65,11 @@ class SampleAppPage extends StatefulWidget {
 }
 
 class _SampleAppPageState extends State<SampleAppPage> {
-  final player = Player();
+  Player player = Player();
 
   bool shop = false;
 
-  Map<String, Map<String, int>> shopPlayer = deepCopy(SHOP_ITEMS);
+  // Map<String, Map<String, int>> shopPlayer = deepCopy(SHOP_ITEMS);
 
   void increaseMoney() {
     setState(() {
@@ -79,28 +81,34 @@ class _SampleAppPageState extends State<SampleAppPage> {
 
   void clickPerSecond() {
     setState(() {
-      money += cps;
+      player.money += player.cps;
     });
   }
 
   void reset() {
     setState(() {
-      money = 0;
+      player = Player();
       shop = false;
-      cpc = 1;
-      cps = 0;
-      shopPlayer = deepCopy(SHOP_ITEMS);
+      // shopPlayer = deepCopy(SHOP_ITEMS);
+    });
+  }
+
+  void resetWithOutRebirth() {
+    final rebirth = player.rebirth;
+    reset();
+    setState(() {
+      player.rebirth = rebirth;
     });
   }
 
   void increaseRebirth() {
-    if (money >=
-        (rebirth > 0
-            ? rebirth * REBIRTH_PRICE_MULTIPLIER * FIRST_REBIRTH
+    if (player.money >=
+        (player.rebirth > 0
+            ? player.rebirth * REBIRTH_PRICE_MULTIPLIER * FIRST_REBIRTH
             : FIRST_REBIRTH)) {
-      reset();
+      resetWithOutRebirth();
       setState(() {
-        rebirth += 1;
+        player.rebirth += 1;
       });
     }
   }
@@ -117,7 +125,7 @@ class _SampleAppPageState extends State<SampleAppPage> {
 
     Timer.periodic(const Duration(seconds: 1), (Timer t) {
       setState(() {
-        money += cps;
+        player.money += player.cps;
       });
     });
   }
@@ -142,8 +150,8 @@ class _SampleAppPageState extends State<SampleAppPage> {
   }
 
   Widget buyButton(String key) {
-    final lastKey = shopPlayer.keys.last;
-    var currentItem = shopPlayer[key];
+    final lastKey = player.items.keys.last;
+    var currentItem = player.items[key];
     void buyItem() {
       if (currentItem == null) {
         return;
@@ -187,22 +195,15 @@ class _SampleAppPageState extends State<SampleAppPage> {
     List<Widget> allCells = [];
 
     for (String label in labelList) {
-      allCells.add(Container(
-          // width: 50,
-          // height: 50,
-          // decoration: BoxDecoration(
-          //     border: Border.all(
-          //         color: label.isNotEmpty ? Colors.black : Colors.transparent)),
-          child: TableCell(
-              // verticalAlignment: TableCellVerticalAlignment.middle,
-              child: label == "BUY"
-                  ? buyButton(labelList[0])
-                  : Text(
-                      label,
-                      style: const TextStyle(
-                          fontSize: 15, fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
-                    ))));
+      allCells.add(TableCell(
+          child: label == "BUY"
+              ? buyButton(labelList[0])
+              : Text(
+                  label,
+                  style: const TextStyle(
+                      fontSize: 15, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                )));
       // }
     }
 
@@ -212,7 +213,7 @@ class _SampleAppPageState extends State<SampleAppPage> {
   Widget shopWidget() {
     List<TableRow> allItems = [];
     allItems.add(rowOfTable(SHOP_HEADINGS));
-    shopPlayer.forEach((key, value) => allItems.add(rowOfTable([
+    player.items.forEach((key, value) => allItems.add(rowOfTable([
           key,
           value["cps"].toString(),
           value["cpc"].toString(),
@@ -245,12 +246,12 @@ class _SampleAppPageState extends State<SampleAppPage> {
       appBar: AppBar(
           title:
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Text("CPS : $cps"),
+        Text("CPS : ${player.cps}"),
         // Text("PLAYER : ${player.money}"),
         // Text("STATE : ${state["money"]}"),
         Text("\$${player.money.toString()}"),
-        Text("REBIRTH : $rebirth"),
-        Text("CPC : $cpc"),
+        Text("REBIRTH : ${player.rebirth}"),
+        Text("CPC : ${player.cpc}"),
       ])),
       // Contenu de la page
       body: Center(
@@ -264,8 +265,8 @@ class _SampleAppPageState extends State<SampleAppPage> {
             createButton(Colors.red.shade600, "RESET", reset),
             createButton(
                 Colors.purple.shade600,
-                "REBIRTH : ${rebirth > 0 ? rebirth * REBIRTH_PRICE_MULTIPLIER * FIRST_REBIRTH : FIRST_REBIRTH}",
-                increaseRebirth),
+                "REBIRTH : ${player.rebirth > 0 ? player.rebirth * REBIRTH_PRICE_MULTIPLIER * FIRST_REBIRTH : FIRST_REBIRTH}",
+                increaseRebirth)
           ])),
       // Bouton flottant
       // floatingActionButton: FloatingActionButton(
