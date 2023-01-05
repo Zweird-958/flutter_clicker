@@ -3,8 +3,16 @@ import 'package:flutter/material.dart';
 import 'dart:collection';
 
 const Map<String, Map<String, int>> SHOP_ITEMS = {
-  "Miner": {"cpc": 10, "cps": 10, "price": 0, "owned": 0}
+  "Miner": {"cpc": 10, "cps": 10, "price": 0, "owned": 0},
+  "Super Miner": {"cpc": 10, "cps": 10, "price": 0, "owned": 0},
+  "Magic Miner": {"cpc": 10, "cps": 10, "price": 0, "owned": 0},
+  "Ultra Miner": {"cpc": 10, "cps": 10, "price": 0, "owned": 0},
 };
+const SHOP_MULTIPLIER = 1.2;
+const SHOP_HEADINGS = ["NAME", "CPS", "CPC", "PRICE", "OWNED", ""];
+
+const FIRST_REBIRTH = 1000;
+const REBIRTH_PRICE_MULTIPLIER = 2;
 
 deepCopy(Map<String, Map<String, int>> original) {
   Map<String, Map<String, int>> copy = {};
@@ -16,6 +24,20 @@ deepCopy(Map<String, Map<String, int>> original) {
 
 void main() {
   runApp(const SampleApp());
+}
+
+class Player {
+  int money;
+  int rebirth;
+  int cpc;
+  int cps;
+
+  Player({
+    this.money = 0,
+    this.rebirth = 0,
+    this.cpc = 0,
+    this.cps = 0,
+  });
 }
 
 class SampleApp extends StatelessWidget {
@@ -41,21 +63,17 @@ class SampleAppPage extends StatefulWidget {
 }
 
 class _SampleAppPageState extends State<SampleAppPage> {
-  // var state = {
-  //   "money": 100,
-  //   "cpc": 0.1
-  // };
+  final player = Player();
 
-  int money = 0;
-  int cpc = 1;
-  int cps = 0;
   bool shop = false;
 
   Map<String, Map<String, int>> shopPlayer = deepCopy(SHOP_ITEMS);
 
   void increaseMoney() {
     setState(() {
-      money += cpc;
+      // state["money"] =
+      //     state["money"]! + state["cpc"]! * (state["rebirth"]! + 1);
+      player.money += player.cpc * (player.rebirth + 1);
     });
   }
 
@@ -73,6 +91,18 @@ class _SampleAppPageState extends State<SampleAppPage> {
       cps = 0;
       shopPlayer = deepCopy(SHOP_ITEMS);
     });
+  }
+
+  void increaseRebirth() {
+    if (money >=
+        (rebirth > 0
+            ? rebirth * REBIRTH_PRICE_MULTIPLIER * FIRST_REBIRTH
+            : FIRST_REBIRTH)) {
+      reset();
+      setState(() {
+        rebirth += 1;
+      });
+    }
   }
 
   void toggleShop() {
@@ -104,34 +134,47 @@ class _SampleAppPageState extends State<SampleAppPage> {
               // padding: EdgeInsets.symmetric(horizontal: 40.0, vertical: 20.0),
               textStyle:
                   const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-          child: Text(label),
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+          ),
         ));
   }
 
   Widget buyButton(String key) {
+    final lastKey = shopPlayer.keys.last;
     var currentItem = shopPlayer[key];
     void buyItem() {
       if (currentItem == null) {
         return;
       }
 
-      if (currentItem["price"] == null) {
-        return;
-      }
-
       setState(() {
-        money -= currentItem["price"] as int;
-        cpc += currentItem["cpc"] as int;
-        cps += currentItem["cps"] as int;
+        player.money -= currentItem["price"] as int;
+        player.cpc += currentItem["cpc"] as int;
+        player.cps += currentItem["cps"] as int;
         currentItem["owned"] = currentItem["owned"]! + 1;
+        currentItem["price"] =
+            (currentItem["price"]! * SHOP_MULTIPLIER).round();
+        // currentItem["cpc"] = (currentItem["cpc"]! * SHOP_MULTIPLIER).round();
+        // currentItem["cps"] = (currentItem["cps"]! * SHOP_MULTIPLIER).round();
       });
     }
 
     return TextButton(
         onPressed: buyItem,
         style: TextButton.styleFrom(
-            backgroundColor:
-                money >= currentItem!["price"]! ? Colors.green : Colors.red,
+            shape: lastKey == key
+                ? const RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.only(bottomRight: Radius.circular(10.0)),
+                  )
+                : const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.zero),
+                  ),
+            backgroundColor: player.money >= currentItem!["price"]!
+                ? Colors.green
+                : Colors.red,
             foregroundColor: Colors.white,
             // fixedSize: Size(130, 50),
             // padding: EdgeInsets.symmetric(horizontal: 40.0, vertical: 20.0),
@@ -142,14 +185,25 @@ class _SampleAppPageState extends State<SampleAppPage> {
 
   TableRow rowOfTable(List<String> labelList) {
     List<Widget> allCells = [];
+
     for (String label in labelList) {
-      if (label == "BUY") {
-        allCells.add(buyButton(labelList[0]));
-      } else {
-        allCells.add(TableCell(
-            verticalAlignment: TableCellVerticalAlignment.middle,
-            child: Center(child: Text(label))));
-      }
+      allCells.add(Container(
+          // width: 50,
+          // height: 50,
+          // decoration: BoxDecoration(
+          //     border: Border.all(
+          //         color: label.isNotEmpty ? Colors.black : Colors.transparent)),
+          child: TableCell(
+              // verticalAlignment: TableCellVerticalAlignment.middle,
+              child: label == "BUY"
+                  ? buyButton(labelList[0])
+                  : Text(
+                      label,
+                      style: const TextStyle(
+                          fontSize: 15, fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                    ))));
+      // }
     }
 
     return TableRow(children: allCells);
@@ -157,7 +211,7 @@ class _SampleAppPageState extends State<SampleAppPage> {
 
   Widget shopWidget() {
     List<TableRow> allItems = [];
-    allItems.add(rowOfTable(["NAME", "CPS", "CPC", "PRICE", "OWNED", ""]));
+    allItems.add(rowOfTable(SHOP_HEADINGS));
     shopPlayer.forEach((key, value) => allItems.add(rowOfTable([
           key,
           value["cps"].toString(),
@@ -167,16 +221,21 @@ class _SampleAppPageState extends State<SampleAppPage> {
           "BUY"
         ])));
     return Visibility(
-      visible: shop,
-      child: SizedBox(
-        width: 600.0,
-        child: Table(
-          defaultColumnWidth: const FixedColumnWidth(100.0),
-          border: TableBorder.all(color: Colors.red, width: 1.0),
-          children: allItems,
-        ),
-      ),
-    );
+        visible: shop,
+        child: SizedBox(
+          width: 600.0,
+          child: Container(
+              margin: const EdgeInsets.only(top: 20.0),
+              child: Table(
+                defaultColumnWidth: const FixedColumnWidth(100.0),
+                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                border: TableBorder.all(
+                    color: Colors.red,
+                    width: 1.0,
+                    borderRadius: BorderRadius.circular(10.0)),
+                children: allItems,
+              )),
+        ));
   }
 
   @override
@@ -184,9 +243,15 @@ class _SampleAppPageState extends State<SampleAppPage> {
     return Scaffold(
       // Top Bar
       appBar: AppBar(
-        title: Center(
-            child: Text("CPS : $cps - \$${money.toString()} - CPC : $cpc")),
-      ),
+          title:
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        Text("CPS : $cps"),
+        // Text("PLAYER : ${player.money}"),
+        // Text("STATE : ${state["money"]}"),
+        Text("\$${player.money.toString()}"),
+        Text("REBIRTH : $rebirth"),
+        Text("CPC : $cpc"),
+      ])),
       // Contenu de la page
       body: Center(
           child: Column(
@@ -197,15 +262,19 @@ class _SampleAppPageState extends State<SampleAppPage> {
             shopWidget(),
             createButton(Colors.green.shade600, "SHOP", toggleShop),
             createButton(Colors.red.shade600, "RESET", reset),
+            createButton(
+                Colors.purple.shade600,
+                "REBIRTH : ${rebirth > 0 ? rebirth * REBIRTH_PRICE_MULTIPLIER * FIRST_REBIRTH : FIRST_REBIRTH}",
+                increaseRebirth),
           ])),
       // Bouton flottant
-      floatingActionButton: FloatingActionButton(
-        onPressed: increaseMoney,
-        // Hover button
-        tooltip: 'Update Text ',
-        // Contenu du button
-        child: const Icon(Icons.update),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: increaseMoney,
+      //   // Hover button
+      //   tooltip: 'Update Text ',
+      //   // Contenu du button
+      //   child: const Icon(Icons.update),
+      // ),
     );
   }
 }
