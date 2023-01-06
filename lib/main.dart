@@ -121,6 +121,10 @@ class _SampleAppPageState extends State<SampleAppPage> {
     });
   }
 
+  double getSizePercentage(percentage) {
+    return MediaQuery.of(context).size.width * percentage;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -223,22 +227,26 @@ class _SampleAppPageState extends State<SampleAppPage> {
           "x${value["owned"].toString()}",
           "BUY"
         ])));
-    return Visibility(
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+      return Visibility(
         visible: shop,
-        child: SizedBox(
-          width: 600.0,
-          child: Container(
-              margin: const EdgeInsets.only(top: 20.0),
-              child: Table(
-                defaultColumnWidth: const FixedColumnWidth(100.0),
-                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                border: TableBorder.all(
-                    color: Colors.red,
-                    width: 1.0,
-                    borderRadius: BorderRadius.circular(10.0)),
-                children: allItems,
-              )),
-        ));
+        // child: SizedBox(
+        // width: getSizePercentage(0.7),
+        child: Container(
+            margin: const EdgeInsets.only(top: 20.0),
+            width: constraints.maxWidth * 0.7,
+            child: Table(
+              // defaultColumnWidth: const FixedColumnWidth(100.0),
+              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+              border: TableBorder.all(
+                  color: Colors.red,
+                  width: 1.0,
+                  borderRadius: BorderRadius.circular(10.0)),
+              children: allItems,
+            )),
+      );
+    });
   }
 
   @override
