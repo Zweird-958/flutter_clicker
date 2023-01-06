@@ -26,6 +26,8 @@ void main() {
   runApp(const SampleApp());
 }
 
+// class Player with info
+
 class Player {
   int money;
   int rebirth;
