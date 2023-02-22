@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_clicker_2/pages/Home.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,6 +15,12 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   int money = 0;
 
+  increaseMoney() {
+    setState(() {
+      money += 1;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -23,9 +30,7 @@ class _MyAppState extends State<MyApp> {
             child: Text("CLICKER"),
           ),
         ),
-        body: const Center(
-          child: Text("HELLO"),
-        ),
+        body: Home(money: money, increaseMoney: increaseMoney),
         bottomNavigationBar: BottomNavigationBar(
           items: const [
             BottomNavigationBarItem(
