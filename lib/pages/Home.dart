@@ -16,34 +16,39 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text("${widget.money}"),
-          Expanded(
-            child: Center(
-              child: SizedBox(
-                width: 100,
-                height: 60,
-                child: ElevatedButton(
-                  style: const ButtonStyle(
-                    padding: MaterialStatePropertyAll(EdgeInsets.all(10)),
-                  ),
-                  onPressed: () => widget.increaseMoney(),
-                  child: const Text(
-                    "WORK",
-                    style: TextStyle(
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Positioned(
+          top: 60,
+          child: Text(
+            "${widget.money}\$",
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        Center(
+          child: SizedBox(
+            width: 100,
+            height: 60,
+            child: ElevatedButton(
+              style: const ButtonStyle(
+                padding: MaterialStatePropertyAll(EdgeInsets.all(10)),
+              ),
+              onPressed: () => widget.increaseMoney(),
+              child: const Text(
+                "WORK",
+                style: TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
