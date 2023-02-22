@@ -1,0 +1,6 @@
+package com.clicker.flutter_clicker_2
+
+import io.flutter.embedding.android.FlutterActivity
+
+class MainActivity: FlutterActivity() {
+}
