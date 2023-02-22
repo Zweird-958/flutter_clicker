@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_clicker_2/pages/Home.dart';
+import 'package:flutter_clicker_2/pages/Shop.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,10 +15,17 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   int money = 0;
+  int _currentIndex = 0;
 
   increaseMoney() {
     setState(() {
       money += 1;
+    });
+  }
+
+  handleNav(index) {
+    setState(() {
+      _currentIndex = index;
     });
   }
 
@@ -30,8 +38,13 @@ class _MyAppState extends State<MyApp> {
             child: Text("CLICKER"),
           ),
         ),
-        body: Home(money: money, increaseMoney: increaseMoney),
+        body: [
+          Home(money: money, increaseMoney: increaseMoney),
+          const Shop()
+        ][_currentIndex],
         bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: handleNav,
           items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.home),
