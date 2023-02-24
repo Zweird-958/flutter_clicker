@@ -88,10 +88,20 @@ class _MyAppState extends State<MyApp> {
           showUnselectedLabels: false,
           currentIndex: _currentIndex,
           onTap: handleNav,
-          items: const [
+          items: [
             BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: "HOME",
+              icon: AnimatedContainer(
+                duration: Duration(milliseconds: 300),
+                decoration: BoxDecoration(
+                  color: _currentIndex == 0 ? Colors.blue : Colors.transparent,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                padding: EdgeInsets.all(10),
+                child: Icon(Icons.home),
+              ),
+              label: 'Home',
+              // icon: Icon(Icons.home),
+              // label: "HOME",
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.shopping_cart),
