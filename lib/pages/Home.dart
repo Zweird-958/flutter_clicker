@@ -4,7 +4,7 @@ import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
 class Home extends StatefulWidget {
-  int money;
+  int? money;
   final Function increaseMoney;
 
   Home({super.key, required this.money, required this.increaseMoney});
