@@ -71,7 +71,7 @@ class _MyAppState extends State<MyApp> {
           IconData icon, String label, int index) =>
       BottomNavigationBarItem(
         icon: AnimatedContainer(
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 300),
           decoration: BoxDecoration(
             color: _currentIndex == index
                 ? Colors.blue.shade100
