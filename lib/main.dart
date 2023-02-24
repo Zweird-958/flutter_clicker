@@ -19,8 +19,9 @@ class _MyAppState extends State<MyApp> {
     "money": 0,
     "cpc": 1,
     "cps": 0,
+    "test": 0,
   };
-  int _currentIndex = 2;
+  int _currentIndex = 0;
   List<Map<String, dynamic>> items = [
     {'title': 'Miner', 'price': 10, 'cpc': 1, 'cps': 0, 'owned': 0},
     {'title': 'Drill', 'price': 50, 'cpc': 1, 'cps': 0, 'owned': 0},
@@ -66,6 +67,25 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  BottomNavigationBarItem AnimatedNavItem(
+          IconData icon, String label, int index) =>
+      BottomNavigationBarItem(
+        icon: AnimatedContainer(
+          duration: Duration(milliseconds: 500),
+          decoration: BoxDecoration(
+            color: _currentIndex == index
+                ? Colors.blue.shade100
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          padding: const EdgeInsets.all(10),
+          child: Icon(icon),
+        ),
+        label: label,
+        // icon: Icon(Icons.home),
+        // label: "HOME",
+      );
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -89,30 +109,9 @@ class _MyAppState extends State<MyApp> {
           currentIndex: _currentIndex,
           onTap: handleNav,
           items: [
-            BottomNavigationBarItem(
-              icon: AnimatedContainer(
-                duration: Duration(milliseconds: 300),
-                decoration: BoxDecoration(
-                  color: _currentIndex == 0
-                      ? Colors.blue.shade100
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                padding: EdgeInsets.all(10),
-                child: const Icon(Icons.home),
-              ),
-              label: 'Home',
-              // icon: Icon(Icons.home),
-              // label: "HOME",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_cart),
-              label: "SHOP",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.account_circle),
-              label: "STATS",
-            ),
+            AnimatedNavItem(Icons.home, "HOME", 0),
+            AnimatedNavItem(Icons.shopping_cart, "SHOP", 1),
+            AnimatedNavItem(Icons.account_circle, "STATS", 2),
           ],
         ),
       ),
