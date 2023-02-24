@@ -31,7 +31,6 @@ class _MyAppState extends State<MyApp> {
   increaseMoney() {
     setState(() {
       state = {...state, "money": state["money"]! + state["cpc"]!};
-      // money += 1;
     });
   }
 
