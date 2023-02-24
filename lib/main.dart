@@ -82,8 +82,6 @@ class _MyAppState extends State<MyApp> {
           child: Icon(icon),
         ),
         label: label,
-        // icon: Icon(Icons.home),
-        // label: "HOME",
       );
 
   @override
