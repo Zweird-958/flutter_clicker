@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_clicker_2/pages/Home.dart';
 import 'package:flutter_clicker_2/pages/Shop.dart';
@@ -19,14 +21,26 @@ class _MyAppState extends State<MyApp> {
     "money": 0,
     "cpc": 1,
     "cps": 0,
-    "test": 0,
   };
   int _currentIndex = 0;
   List<Map<String, dynamic>> items = [
     {'title': 'Miner', 'price': 10, 'cpc': 1, 'cps': 0, 'owned': 0},
-    {'title': 'Drill', 'price': 50, 'cpc': 1, 'cps': 0, 'owned': 0},
-    {'title': 'Excavator', 'price': 100, 'cpc': 1, 'cps': 0, 'owned': 0},
+    {'title': 'Drill', 'price': 50, 'cpc': 5, 'cps': 1, 'owned': 0},
+    {'title': 'Excavator', 'price': 100, 'cpc': 10, 'cps': 2, 'owned': 0},
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    Timer.periodic(const Duration(seconds: 1), (Timer timer) {
+      setState(() {
+        state = {
+          ...state,
+          "money": state["money"]! + state["cpc"]! * state["cps"]!
+        };
+      });
+    });
+  }
 
   increaseMoney() {
     setState(() {
