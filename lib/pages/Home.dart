@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:intl/intl.dart';
 
 class Home extends StatefulWidget {
   int? money;
@@ -22,7 +23,7 @@ class _HomeState extends State<Home> {
         Positioned(
           top: 60,
           child: Text(
-            "${widget.money}\$",
+            "${NumberFomrat}\$",
             style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
