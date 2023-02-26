@@ -28,7 +28,7 @@ class _HomeState extends State<Home> {
         Positioned(
           top: 60,
           child: Text(
-            "$formattedMoney $systemLocale\$",
+            "$formattedMoney\$",
             style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
