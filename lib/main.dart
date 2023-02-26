@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_clicker_2/pages/Home.dart';
 import 'package:flutter_clicker_2/pages/Shop.dart';
 import 'package:flutter_clicker_2/pages/Stats.dart';
+import 'package:flutter_device_locale/flutter_device_locale.dart';
 
 void main() {
   runApp(const MyApp());
@@ -28,10 +30,12 @@ class _MyAppState extends State<MyApp> {
     {'title': 'Drill', 'price': 50, 'cpc': 5, 'cps': 1, 'owned': 0},
     {'title': 'Excavator', 'price': 100, 'cpc': 10, 'cps': 2, 'owned': 0},
   ];
+  String _deviceLocale = 'Not loaded';
 
   @override
   void initState() {
     super.initState();
+    initDeviceLocale();
     Timer.periodic(const Duration(seconds: 1), (Timer timer) {
       setState(() {
         state = {
@@ -74,12 +78,6 @@ class _MyAppState extends State<MyApp> {
         }
       };
 
-  handleNav(index) {
-    setState(() {
-      _currentIndex = index;
-    });
-  }
-
   BottomNavigationBarItem AnimatedNavItem(
           IconData icon, String label, int index) =>
       BottomNavigationBarItem(
@@ -97,23 +95,50 @@ class _MyAppState extends State<MyApp> {
         label: label,
       );
 
+  Future<void> initDeviceLocale() async {
+    String deviceLocale = 'Unknown';
+    try {
+      deviceLocale = (await DeviceLocale.getCurrentLocale()).toString();
+    } on PlatformException {
+      deviceLocale = 'Failed to get the device locale.';
+    }
+
+    if (!mounted) return;
+
+    setState(() {
+      _deviceLocale = deviceLocale;
+    });
+  }
+
+  handleNav(index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Center(
+          title: Center(
             child: Text("CLICKER"),
           ),
         ),
         body: [
-          Home(money: state["money"], increaseMoney: increaseMoney),
+          Home(
+              money: state["money"],
+              increaseMoney: increaseMoney,
+              lang: _deviceLocale),
           Shop(
             items: items,
             buyItem: buyItem,
             money: state["money"]!,
           ),
-          Stats(state: state),
+          Stats(
+            state: state,
+            lang: _deviceLocale,
+          ),
         ][_currentIndex],
         bottomNavigationBar: BottomNavigationBar(
           showUnselectedLabels: false,
