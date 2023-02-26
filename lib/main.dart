@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_clicker_2/pages/Calendar.dart';
 import 'package:flutter_clicker_2/pages/Home.dart';
 import 'package:flutter_clicker_2/pages/Shop.dart';
 import 'package:flutter_clicker_2/pages/Stats.dart';
