@@ -17,13 +17,18 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
+    Locale systemLocale = Localizations.localeOf(context);
+    String formattedMoney =
+        NumberFormat.decimalPattern(systemLocale.languageCode)
+            .format(widget.money);
+
     return Stack(
       alignment: Alignment.center,
       children: [
         Positioned(
           top: 60,
           child: Text(
-            "${NumberFomrat}\$",
+            "$formattedMoney $systemLocale\$",
             style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
