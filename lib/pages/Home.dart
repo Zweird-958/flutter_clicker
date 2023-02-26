@@ -6,8 +6,13 @@ import 'package:intl/intl.dart';
 class Home extends StatefulWidget {
   int? money;
   final Function increaseMoney;
+  String lang;
 
-  Home({super.key, required this.money, required this.increaseMoney});
+  Home(
+      {super.key,
+      required this.money,
+      required this.increaseMoney,
+      required this.lang});
 
   @override
   State<Home> createState() => _HomeState();
@@ -16,10 +21,12 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
-    Locale systemLocale = Localizations.localeOf(context);
+    // Locale locale = await DeviceLocale.getCurrentLocale();
+    // Locale systemLocale = Localizations.localeOf(context);
     String formattedMoney =
-        NumberFormat.decimalPattern(systemLocale.languageCode)
-            .format(widget.money);
+        NumberFormat.decimalPattern(widget.lang).format(widget.money);
+
+    // String formattedMoney = "100";
 
     return Stack(
       alignment: Alignment.center,

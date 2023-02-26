@@ -2,10 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:intl/intl.dart';
 
 class Stats extends StatefulWidget {
   Map<String, int> state;
-  Stats({super.key, required this.state});
+  String lang;
+  Stats({super.key, required this.state, required this.lang});
 
   @override
   State<Stats> createState() => _StatsState();
@@ -17,6 +19,11 @@ class _StatsState extends State<Stats> {
     Map<String, int> state = widget.state;
     List<String> keys = state.keys.toList();
     List<int> values = state.values.toList();
+
+    NumberFormat formattedPattern = NumberFormat.decimalPattern(widget.lang);
+
+    List<String> formattedValues =
+        values.map((e) => formattedPattern.format(e)).toList();
 
     return Center(
       child: ListView.builder(
@@ -32,7 +39,7 @@ class _StatsState extends State<Stats> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(keys[index].toUpperCase()),
-                Text("${values[index]}")
+                Text(formattedValues[index])
               ],
             ),
           ),
