@@ -1,11 +1,11 @@
 import 'dart:async';
 
+import 'package:devicelocale/devicelocale.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_clicker_2/pages/Home.dart';
 import 'package:flutter_clicker_2/pages/Shop.dart';
 import 'package:flutter_clicker_2/pages/Stats.dart';
-import 'package:flutter_device_locale/flutter_device_locale.dart';
 
 void main() {
   runApp(const MyApp());
@@ -98,7 +98,7 @@ class _MyAppState extends State<MyApp> {
   Future<void> initDeviceLocale() async {
     String deviceLocale = 'Unknown';
     try {
-      deviceLocale = (await DeviceLocale.getCurrentLocale()).toString();
+      deviceLocale = (await Devicelocale.defaultLocale)!;
     } on PlatformException {
       deviceLocale = 'Failed to get the device locale.';
     }
